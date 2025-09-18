@@ -1,8 +1,8 @@
 # Nomad Cluster Deployment with Terraform
 
-## Overview
+## About this project
 
-This project demonstrates the deployment of a secure, scalable, and resilient HashiCorp Nomad cluster on AWS using Infrastructure as Code (Terraform). This is my implementation for the MLOps Engineer test task, showcasing distributed systems provisioning, secure networking, and infrastructure best practices.
+I built this repository as a student project to demonstrate provisioning a small HashiCorp Nomad cluster on AWS using Terraform. The goal was to show practical infrastructure-as-code, basic networking, and a simple application deployment with Nomad and Consul.
 
 ## Architecture
 
@@ -42,18 +42,12 @@ This project demonstrates the deployment of a secure, scalable, and resilient Ha
 - **VPC**: Isolated network environment with public subnets
 - **Security Groups**: Firewall rules for secure communication
 
-## Features
+### What you'll find here
 
-### Core Requirements ✅
-- [x] **Infrastructure as Code**: Complete Terraform configuration
-- [x] **Cluster Topology**: 1 server + 2 clients (easily scalable)
-- [x] **Secure UI Access**: Nomad UI with configurable access controls
-- [x] **Workload Deployment**: Hello-world web application
-
-### Bonus Features ✅
-- [x] **CI/CD Automation**: GitHub Actions pipeline
-- [x] **Security Best Practices**: VPC, security groups, IAM roles
-- [x] **Observability**: Health checks, logs, and monitoring ready
+- Terraform code to create a small Nomad cluster (1 server, configurable number of clients)
+- Example Nomad job (`nomad-jobs/hello-world.nomad`) that runs a simple nginx container
+- Scripts to automate local deployment and basic health checks (`scripts/`)
+- A GitHub Actions workflow that demonstrates how CI could validate/plan changes
 
 ## Quick Start
 
@@ -64,43 +58,34 @@ This project demonstrates the deployment of a secure, scalable, and resilient Ha
 3. **Terraform** (>= 1.0) installed
 4. **SSH key pair** for instance access
 
-### Option 1: Automated Deployment (Recommended)
+### Quick start (automated)
+
+Clone the repo and run the helper script to deploy a demo cluster. The script runs Terraform and deploys the example job.
 
 ```bash
-# Clone the repository
 git clone https://github.com/KoushalShrma/NomadTerraformDeployment.git
 cd NomadTerraformDeployment
-
-# Run the automated deployment script
 ./scripts/deploy.sh deploy
 ```
 
-The script will:
-- Check prerequisites
-- Generate SSH keys
-- Create terraform.tfvars
-- Deploy infrastructure
-- Wait for cluster readiness
-- Deploy the hello-world application
-- Display connection information
+The script will check prerequisites, create `terraform/terraform.tfvars` (if missing), run Terraform, wait for the server, and submit the example job.
 
-### Option 2: Manual Deployment
+### Manual deployment
+
+If you prefer to run Terraform manually:
 
 ```bash
-# 1. Generate SSH key
+# generate an SSH key (used by the helper scripts)
 ssh-keygen -t rsa -b 4096 -f ~/.ssh/nomad-cluster-key -N ""
 
-# 2. Configure Terraform variables
 cd terraform
 cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars with your settings
+# Edit terraform.tfvars and paste your public key into `ssh_public_key`
 
-# 3. Deploy infrastructure
 terraform init
-terraform plan
 terraform apply
 
-# 4. Deploy sample application
+# When Terraform finishes, run the example job from the repo root:
 export NOMAD_ADDR="http://$(terraform output -raw nomad_server_public_ip):4646"
 nomad job run ../nomad-jobs/hello-world.nomad
 ```
@@ -143,18 +128,12 @@ Then run:
 terraform apply
 ```
 
-## Accessing the Cluster
+## Access
 
-### Nomad UI
+Nomad UI: http://<server-public-ip>:4646
 
-After deployment, access the Nomad UI at:
-```
-http://<server-public-ip>:4646
-```
+SSH (example):
 
-### SSH Access
-
-Connect to instances:
 ```bash
 # Server
 ssh -i ~/.ssh/nomad-cluster-key ubuntu@<server-ip>
@@ -163,69 +142,15 @@ ssh -i ~/.ssh/nomad-cluster-key ubuntu@<server-ip>
 ssh -i ~/.ssh/nomad-cluster-key ubuntu@<client-ip>
 ```
 
-### Application
+Check the Nomad UI for job status and allocated ports for the example app.
 
-The hello-world application will be available on the client nodes. Check the Nomad UI for the allocated ports.
+## Sample app
 
-## Sample Application
+The example Nomad job runs a small nginx container and demonstrates how to register services with Consul and use health checks. To run your own, create a `.nomad` job and use `nomad job run`.
 
-The included hello-world application demonstrates:
+## CI/CD
 
-- **Containerized deployment** using Docker
-- **Service registration** with Consul
-- **Health checks** for reliability
-- **Multiple instances** for high availability
-- **Custom HTML** showing deployment details
-
-### Deploying Custom Applications
-
-1. Create a Nomad job file (`.nomad`)
-2. Submit using: `nomad job run your-app.nomad`
-3. Monitor via: `nomad job status your-app`
-
-Example job structure:
-```hcl
-job "my-app" {
-  datacenters = ["dev"]
-  
-  group "web" {
-    count = 2
-    
-    task "app" {
-      driver = "docker"
-      config {
-        image = "my-app:latest"
-        ports = ["http"]
-      }
-    }
-  }
-}
-```
-
-## CI/CD Pipeline
-
-The project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that:
-
-1. **Validates** Terraform code on PRs
-2. **Plans** deployments for review
-3. **Applies** changes on main branch
-4. **Deploys** sample applications
-5. **Destroys** infrastructure when needed
-
-### Required Secrets
-
-Configure these in your GitHub repository settings:
-
-- `AWS_ACCESS_KEY_ID`: AWS access key
-- `AWS_SECRET_ACCESS_KEY`: AWS secret key
-
-### Manual Workflow Triggers
-
-You can manually trigger deployments:
-
-1. Go to Actions tab in GitHub
-2. Select "Deploy Nomad Cluster"
-3. Choose action: `plan`, `apply`, or `destroy`
+There is a sample GitHub Actions workflow that shows how Terraform plan/apply could be run in CI. If you use it, add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to repository secrets.
 
 ## Security Considerations
 
@@ -262,45 +187,21 @@ Ready for integration with:
 - Grafana (visualization)
 - ELK Stack (log aggregation)
 
-## Troubleshooting
+## Troubleshooting (short)
 
-### Common Issues
-
-1. **Cluster not starting**
-   ```bash
-   # Check services on server
-   sudo systemctl status nomad consul
-   sudo journalctl -u nomad -f
-   ```
-
-2. **Clients not joining**
-   ```bash
-   # Verify connectivity
-   nomad node status
-   consul members
-   ```
-
-3. **Application not deploying**
-   ```bash
-   # Check job status
-   nomad job status hello-world
-   nomad alloc logs <allocation-id>
-   ```
-
-### Useful Commands
+On the server, check Nomad and Consul systemd services and logs:
 
 ```bash
-# Cluster status
-nomad server members
+sudo systemctl status nomad consul
+sudo journalctl -u nomad -f
+```
+
+Nomad/Consul queries (from a machine with the CLIs):
+
+```bash
 nomad node status
-
-# Job management
-nomad job status
-nomad job stop hello-world
-
-# Service discovery
-consul catalog services
-consul catalog nodes
+consul members
+nomad job status hello-world
 ```
 
 ## Cost Optimization
@@ -338,23 +239,15 @@ rm ~/.ssh/nomad-cluster-key*
 rm terraform/terraform.tfstate*
 ```
 
-## Project Structure
+## Project structure
 
 ```
 .
-├── README.md                  # This file
-├── terraform/                 # Infrastructure code
-│   ├── main.tf               # Main Terraform configuration
-│   ├── variables.tf          # Variable definitions
-│   ├── outputs.tf            # Output values
-│   ├── user_data_server.sh   # Server initialization script
-│   └── user_data_client.sh   # Client initialization script
-├── nomad-jobs/               # Nomad job definitions
-│   └── hello-world.nomad     # Sample application
-├── scripts/                  # Utility scripts
-│   └── deploy.sh            # Automated deployment script
-└── .github/workflows/        # CI/CD pipeline
-    └── deploy.yml           # GitHub Actions workflow
+├── README.md
+├── terraform/             # Terraform code and user-data scripts
+├── nomad-jobs/            # Example job files
+├── scripts/               # Helper scripts (deploy, health-check)
+└── .github/workflows/     # CI examples
 ```
 
 ## Learning Resources
@@ -373,6 +266,6 @@ This project is for educational purposes. Use at your own risk.
 
 ---
 
-**Author**: Koushal Sharma  
-**Project**: MLOps Engineer Test Task  
-**Technology Stack**: Terraform, AWS, Nomad, Consul, Docker, GitHub Actions
+**Author**: Koushal Sharma
+**Project**: Student demo — Nomad on AWS
+**Tech**: Terraform, AWS, Nomad, Consul, Docker

@@ -1,5 +1,5 @@
 # Main Terraform configuration for Nomad cluster deployment
-# This is my implementation for the MLOps Engineer test task
+# Student project implementation
 
 terraform {
   required_version = ">= 1.0"

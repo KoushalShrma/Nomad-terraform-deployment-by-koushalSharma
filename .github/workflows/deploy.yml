@@ -1,4 +1,4 @@
-name: Deploy Nomad Cluster
+name: Deploy Nomad Cluster (example)
 
 on:
   push:
@@ -162,12 +162,12 @@ jobs:
           echo "Attempt $attempt/$max_attempts: Checking Nomad server..."
           
           if curl -s "http://${{ env.NOMAD_SERVER_IP }}:4646/v1/status/leader" &> /dev/null; then
-            echo "✅ Nomad server is ready!"
+            echo "Nomad server is ready"
             break
           fi
           
           if [ $attempt -eq $max_attempts ]; then
-            echo "❌ Nomad server failed to become ready"
+            echo "Nomad server failed to become ready"
             exit 1
           fi
           
@@ -191,7 +191,7 @@ jobs:
 
     - name: Output connection info
       run: |
-        echo "🎉 Deployment successful!"
+        echo "Deployment successful"
         echo "Nomad UI: http://${{ env.NOMAD_SERVER_IP }}:4646"
         cat /tmp/terraform-outputs.json
 

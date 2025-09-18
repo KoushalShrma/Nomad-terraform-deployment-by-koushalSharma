@@ -46,7 +46,8 @@ variable "client_count" {
 variable "ssh_public_key" {
   description = "SSH public key for EC2 instances"
   type        = string
-  # Note: This should be provided via terraform.tfvars or environment variable
+  # Note: Provide this in terraform.tfvars or via environment variable. The helper script
+  # will create terraform/terraform.tfvars with a generated key if one is not present.
 }
 
 variable "allowed_ssh_cidr" {

@@ -36,6 +36,14 @@ output "ssh_connection_commands" {
   }
 }
 
+output "ssh_example_helper_key" {
+  description = "Example SSH commands using the helper key created by scripts (nomad-cluster-key)"
+  value = {
+    server = "ssh -i ~/.ssh/nomad-cluster-key ubuntu@${aws_instance.nomad_server.public_ip}"
+    clients = [for ip in aws_instance.nomad_client[*].public_ip : "ssh -i ~/.ssh/nomad-cluster-key ubuntu@${ip}"]
+  }
+}
+
 output "cluster_info" {
   description = "Summary of cluster information"
   value = {
