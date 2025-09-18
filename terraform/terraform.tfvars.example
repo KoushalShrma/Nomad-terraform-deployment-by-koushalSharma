@@ -1,0 +1,25 @@
+# Example Terraform variables for Nomad cluster deployment
+# Copy this file to terraform.tfvars and modify the values
+
+# AWS Configuration
+aws_region = "us-west-2"
+environment = "dev"
+cluster_name = "nomad-cluster"
+
+# Instance Configuration
+server_instance_type = "t3.small"
+client_instance_type = "t3.small"
+client_count = 2
+
+# SSH Configuration
+# Generate with: ssh-keygen -t rsa -b 4096 -f ~/.ssh/nomad-cluster-key
+ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQ... your-public-key-here"
+
+# Security Configuration
+# For production, replace with your specific IP ranges
+allowed_ssh_cidr = ["0.0.0.0/0"]  # Allow SSH from anywhere (demo only!)
+allowed_ui_cidr = ["0.0.0.0/0"]   # Allow UI access from anywhere (demo only!)
+
+# Example production values:
+# allowed_ssh_cidr = ["203.0.113.0/24"]  # Your office IP range
+# allowed_ui_cidr = ["203.0.113.0/24"]   # Your office IP range
