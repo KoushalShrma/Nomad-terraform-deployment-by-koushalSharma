@@ -256,6 +256,33 @@ rm terraform/terraform.tfstate*
 - [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 - [Consul Service Discovery](https://developer.hashicorp.com/consul/docs)
 
+## Tailwind CSS Utility Classes Reference
+
+This repository now includes a comprehensive reference guide for Tailwind CSS utility classes:
+
+- **Tailwind-CSS-Utility-Classes.md** - Complete Markdown reference
+- **Tailwind-CSS-Utility-Classes.docx** - Word document version
+
+The reference includes all Tailwind CSS v3.x utility classes organized by category:
+- Layout (Display, Position, Overflow, etc.)
+- Flexbox & Grid
+- Spacing (Padding, Margin)
+- Sizing (Width, Height, Min/Max)
+- Typography (Fonts, Text styles, Colors)
+- Backgrounds (Colors, Gradients, Images)
+- Borders (Radius, Width, Color, Style)
+- Effects (Shadows, Opacity, Blend modes)
+- Filters & Backdrop Filters
+- Tables
+- Transitions & Animations
+- Transforms
+- Interactivity
+- SVG
+- Accessibility
+- Responsive Design & State Modifiers
+
+Perfect for quick reference when building websites with Tailwind CSS!
+
 ## Contributing
 
 This is a student project for demonstration purposes. Feel free to fork and experiment!
